@@ -112,7 +112,7 @@ export default class TimeGrid extends Component {
 
     this.applyScroll()
     this.positionTimeIndicator()
-    //this.checkOverflow()
+    // this.checkOverflow()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -131,7 +131,7 @@ export default class TimeGrid extends Component {
   }
 
   handleSelectAlldayEvent = (...args) => {
-    //cancel any pending selections so only the event click goes through.
+    // cancel any pending selections so only the event click goes through.
     this.clearSelection()
     notify(this.props.onSelectEvent, args)
   }
@@ -200,18 +200,21 @@ export default class TimeGrid extends Component {
 
     width = width || this.state.gutterWidth
 
-    let start = range[0],
-      end = range[range.length - 1]
+    let start = range[0]
+
+    let end = range[range.length - 1]
 
     this.slots = range.length
 
-    let allDayEvents = [],
-      rangeEvents = []
+    let allDayEvents = []
+
+    let rangeEvents = []
 
     events.forEach(event => {
       if (inRange(event, start, end, accessors)) {
-        let eStart = accessors.start(event),
-          eEnd = accessors.end(event)
+        let eStart = accessors.start(event)
+
+        let eEnd = accessors.end(event)
 
         if (
           accessors.allDay(event) ||
@@ -231,47 +234,49 @@ export default class TimeGrid extends Component {
       <div
         className={cn('rbc-time-view', resources && 'rbc-time-view-resources')}
       >
-        <TimeGridHeader
-          range={range}
-          events={allDayEvents}
-          width={width}
-          getNow={getNow}
+        <TimeGutter
+          date={start}
+          ref={this.gutterRef}
           localizer={localizer}
-          selected={selected}
-          resources={this.resources}
-          selectable={this.props.selectable}
-          accessors={accessors}
-          getters={getters}
+          min={dates.merge(start, min)}
+          max={dates.merge(start, max)}
+          step={this.props.step}
+          getNow={this.props.getNow}
+          timeslots={this.props.timeslots}
           components={components}
-          scrollRef={this.scrollRef}
-          isOverflowing={this.state.isOverflowing}
-          longPressThreshold={longPressThreshold}
-          onSelectSlot={this.handleSelectAllDaySlot}
-          onSelectEvent={this.handleSelectAlldayEvent}
-          onDoubleClickEvent={this.props.onDoubleClickEvent}
-          onDrillDown={this.props.onDrillDown}
-          getDrilldownView={this.props.getDrilldownView}
+          className="rbc-time-gutter"
         />
-        <div
-          ref="content"
-          className="rbc-time-content"
-          onScroll={this.handleScroll}
-        >
-          <TimeGutter
-            date={start}
-            ref={this.gutterRef}
+        <div className="rbc-time-content-wrapper" onScroll={this.handleScroll}>
+          <TimeGridHeader
+            range={range}
+            events={allDayEvents}
+            width={width}
+            getNow={getNow}
             localizer={localizer}
-            min={dates.merge(start, min)}
-            max={dates.merge(start, max)}
-            step={this.props.step}
-            getNow={this.props.getNow}
-            timeslots={this.props.timeslots}
+            selected={selected}
+            resources={this.resources}
+            selectable={this.props.selectable}
+            accessors={accessors}
+            getters={getters}
             components={components}
-            className="rbc-time-gutter"
+            scrollRef={this.scrollRef}
+            isOverflowing={this.state.isOverflowing}
+            longPressThreshold={longPressThreshold}
+            onSelectSlot={this.handleSelectAllDaySlot}
+            onSelectEvent={this.handleSelectAlldayEvent}
+            onDoubleClickEvent={this.props.onDoubleClickEvent}
+            onDrillDown={this.props.onDrillDown}
+            getDrilldownView={this.props.getDrilldownView}
           />
-          {this.renderEvents(range, rangeEvents, getNow())}
+          <div
+            ref="content"
+            className="rbc-time-content"
+            onScroll={this.handleScroll}
+          >
+            {this.renderEvents(range, rangeEvents, getNow())}
 
-          <div ref="timeIndicator" className="rbc-current-time-indicator" />
+            <div ref="timeIndicator" className="rbc-current-time-indicator" />
+          </div>
         </div>
       </div>
     )
